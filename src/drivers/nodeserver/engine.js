@@ -54,8 +54,8 @@ function openURL(page, url, req, res){
   page.open(url, function (status){
       if (status == "success") {
 
-				var config = require("./config");
-				var wappalyzer = require(config.WAPPALYZER_PATH + "/wapp");
+				//Include the Wappalyzer custom code
+				var wappalyzer = require("./index");
 
 				var options={
 					url : url,
