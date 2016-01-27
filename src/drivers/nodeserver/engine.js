@@ -50,7 +50,7 @@ app.get('/close', function (req, res) {
 });
 
 function openURL(page, url, req, res){
-	var html, headers = {},environmentVars;
+	var html, headers = {};
   page.open(url, function (status){
       if (status == "success") {
 
@@ -80,41 +80,22 @@ function openURL(page, url, req, res){
 							}
 							return environmentVars;
 						}, function (env) {
+							env = env.split(' ').slice(0, 1500);
 							callback(null, env);
 						});
+					},
+					headers: function(callback){
+						callback(null, headers);
 					}
 					}, function(err, results) {
+					  //results is now equals to: {html:'', env:''}
 						var data = results;
-					  console.log(data);
-						//results is now equals to: {html:{}, env:{}}
+					  //console.log(data);
+						wappalyzer.detectFromUrl(options, data, function(err, apps, appInfo) {
+							console.log(err, apps, appInfo);
+						});
+						page.close();
 				});
-
-				//Headers: Already loaded the headers in the resource received callback
-
-
-				//environmentVars = page.evaluate(function() {
-				//	var i, environmentVars;
-				//	for ( i in window ) {
-				//		environmentVars += i + ' ';
-				//	}
-				//	return environmentVars;
-				//}, function (env) {
-        //
-				//	console.log({ message: 'environmentVars: ' + env });
-				//	env = env.split(' ').slice(0, 500);
-        //
-				//	var data={
-				//		html: html,
-				//		headers: headers,
-				//		env: env
-				//	};
-        //
-				//	wappalyzer.detectFromUrl(options, data, function(err, apps, appInfo) {
-				//		console.log(err,apps,appInfo);
-				//	});
-        //
-				//	page.close();
-				//});
 
       }
       else{
