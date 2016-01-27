@@ -59,7 +59,7 @@ function openURL(page, url, req, res){
 
 				var options={
 					url : url,
-					debug:true
+					debug:false
 				};
 
 				async.parallel({
@@ -93,6 +93,7 @@ function openURL(page, url, req, res){
 					  //console.log(data);
 						wappalyzer.detectFromUrl(options, data, function(err, apps, appInfo) {
 							console.log(err, apps, appInfo);
+							res.send({err: err, apps:apps, appInfo:appInfo})
 						});
 						page.close();
 				});
