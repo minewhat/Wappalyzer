@@ -17,6 +17,25 @@ var server = app.listen(port, function () {
   console.log('Phantom engine listening on port, ', port);
 });
 
+var N_SIMULTANEOUS = 1;
+var q = async.queue(function (task, next) {
+	openURL(task.page, task.url, task.req, task.res, function(err, data){
+		if(!err){
+			task.res.send(data);
+			fs.appendFile('message.txt', JSON.stringify(data), function (err) {});
+			//console.log(data);
+		}else{
+			task.res.send("error");
+			console.log("Wappalyzer API failed.");
+		}
+		next();
+	});
+}, N_SIMULTANEOUS);
+
+q.drain = function() {
+	console.log('\nQueue empty.\n');
+};
+
 phantom.create(function (phinstance) {
   ph = phinstance;
   if(!ph)
@@ -38,7 +57,8 @@ app.get('/processurl', function (req, res) {
 
     try{
       pageInit(page);
-      openURL(page, url, req, res);
+			var task = { page:page, url: url, req: req, res: res };
+			q.push(task);
     }catch(e){
       console.log("exception", e);
     }
@@ -49,7 +69,7 @@ app.get('/close', function (req, res) {
   closeAll(res);
 });
 
-function openURL(page, url, req, res){
+function openURL(page, url, req, res, cb){
 	var html, headers = {};
   page.open(url, function (status){
       if (status == "success") {
@@ -88,19 +108,19 @@ function openURL(page, url, req, res){
 						callback(null, headers);
 					}
 					}, function(err, results) {
-					  //results is now equals to: {html:'', env:''}
+					  //results is now equals to: {html:'', env:'', headers:''}
 						var data = results;
 					  //console.log(data);
 						wappalyzer.detectFromUrl(options, data, function(err, apps, appInfo) {
-							console.log(err, apps, appInfo);
-							res.send({err: err, apps:apps, appInfo:appInfo})
+							//console.log(err, apps, appInfo);
+							cb(err, {apps:apps, appInfo:appInfo});
 						});
 						page.close();
 				});
 
       }
       else{
-        res.send('Page load failed');
+        res.send('Page load failed.');
       }
   });
 

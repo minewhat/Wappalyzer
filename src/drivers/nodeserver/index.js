@@ -1,13 +1,12 @@
 'use strict';
 
-var request = require('request');
 var fs = require('fs');
 var path = require('path');
 
 
 /**
- * Do a actual request for the body & headers, then
- * run through detection
+ * This will take body & headers as input, then
+ * run through detection.
  **/
 exports.detectFromUrl = function (options, data, cb) {
 
