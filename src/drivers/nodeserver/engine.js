@@ -8,21 +8,43 @@ var fs = require('fs');
 var phantom = require('phantom');
 var ph;
 
-var RESOURCE_TIMEOUT = 9000;
+var RESOURCE_TIMEOUT = 10000;
 
 var port = process.argv[2];
+var util = require('util');
+var log_stdout = process.stdout;
+var log_stderr = process.stderr;
+var debug = true;
+
+var access = fs.createWriteStream('node.access-'+ port +'.log', { flags: 'a' }),
+		error = fs.createWriteStream('node.error-'+ port +'.log', { flags: 'a' });
+console.log = function(d) {
+	if(debug){
+		access.write(util.format(d) + '\n');
+		log_stdout.write(util.format(d) + '\n');
+	}
+};
+console.error = function(d) {
+	if(debug) {
+		error.write(util.format(d) + '\n');
+		log_stderr.write(util.format(d) + '\n');
+	}
+};
+
+
 if(!port)
   console.error("Port not given");
 var server = app.listen(port, function () {
   console.log('Phantom engine listening on port, ', port);
 });
 
+
 var N_SIMULTANEOUS = 1;
 var q = async.queue(function (task, next) {
 	openURL(task.page, task.url, task.req, task.res, function(err, data){
 		if(!err){
 			task.res.send(data);
-			fs.appendFile('message.txt', JSON.stringify(data), function (err) {});
+
 			//console.log(data);
 		}else{
 			task.res.send("error");
@@ -77,50 +99,56 @@ function openURL(page, url, req, res, cb){
 				//Include the Wappalyzer custom code
 				var wappalyzer = require("./index");
 
-				var options={
-					url : url,
-					debug:false
-				};
+				try {
+					var options={
+						url : url,
+						debug:false
+					};
 
-				async.parallel({
-					html: function(callback) {
-						page.get('content', function(data){
-							var h = data;
-							if ( h.length > 50000 ) {
-								h = h.substring(0, 25000) + h.substring(h.length - 25000, h.length);
-							}
-							callback(null, h);
-						});
-					},
-					env: function(callback) {
-						page.evaluate(function () {
-							var i, environmentVars = '';
-							for (i in window) {
-								environmentVars += i + ' ';
-							}
-							return environmentVars;
-						}, function (env) {
-							env = env.split(' ').slice(0, 1500);
-							callback(null, env);
-						});
-					},
-					headers: function(callback){
-						callback(null, headers);
-					}
+					async.parallel({
+						html: function(callback) {
+							page.get('content', function(data){
+								var h = data;
+								if ( h.length > 50000 ) {
+									h = h.substring(0, 25000) + h.substring(h.length - 25000, h.length);
+								}
+								callback(null, h);
+							});
+						},
+						env: function(callback) {
+							page.evaluate(function () {
+								var i, environmentVars = '';
+								for (i in window) {
+									environmentVars += i + ' ';
+								}
+								return environmentVars;
+							}, function (env) {
+								env = env.split(' ').slice(0, 1500);
+								callback(null, env);
+							});
+						},
+						headers: function(callback){
+							callback(null, headers);
+						}
 					}, function(err, results) {
-					  //results is now equals to: {html:'', env:'', headers:''}
+						//results is now equals to: {html:'', env:'', headers:''}
 						var data = results;
-					  //console.log(data);
+						//console.log(data);
 						wappalyzer.detectFromUrl(options, data, function(err, apps, appInfo) {
 							//console.log(err, apps, appInfo);
 							cb(err, {apps:apps, appInfo:appInfo});
 						});
 						page.close();
-				});
+					});
+				}catch(e){
+					console.log('exception caugth', e);
+					errorHandling();
+				}
+
 
       }
       else{
-        res.send('Page load failed.');
+        res.send('{status:"page load failed"}');
       }
   });
 
@@ -134,8 +162,8 @@ function openURL(page, url, req, res, cb){
 				return;
 			}
 
-			if ( response.stage === 'end' && response.status === 200 && response.contentType.indexOf('text/html') !== -1 ) {
-				response.headers.forEach(function(header) {
+			if (response.stage === 'end' && response.status === 200) {
+					response.headers.forEach(function(header) {
 					headers[header.name.toLowerCase()] = header.value;
 				});
 			}
@@ -150,8 +178,13 @@ function closeAll(res){
 }
 
 function errorHandling(){
-   restartPhantom();
-   console.error("Internal problem occured");
+	 console.error("Internal error occured");
+	 restartPhantom();
+	 server.close();
+
+	 server = app.listen(port, function () {
+		console.log('Phantom engine restarted on port, ', port);
+	 });
 }
 
 function restartPhantom(){
@@ -182,6 +215,11 @@ function pageInit(page){
   page.set('onResourceTimeout', function(message) {
     console.log('Resource timeout');
   });
+
+	process.on('uncaughtException', function (err) {
+		console.log('uncaughtException', err);
+		errorHandling()
+	})
 }
 
 
