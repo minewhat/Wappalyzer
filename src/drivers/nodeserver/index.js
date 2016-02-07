@@ -24,10 +24,45 @@ exports.detectFromUrl = function (options, data, cb) {
 };
 
 
+/**
+ * This will take body & headers as input, then
+ * run through detection.
+ **/
+exports.detectAppsFromUrl = function (options, data, cb) {
+
+	// ensure options and url were present
+	if (!options || !options.url) {
+
+		// send back a error ...
+		cb(new Error("\"url\" is a required option to run"
+		+ " wappalyzer and get the page content"))
+
+	} else {
+		//run actual detection
+		runWappalyzer(options, data, function(err, detectedApps, fullData){
+			if(err || !detectedApps || fullData){
+				cb(true, null);
+			}
+
+			console.log(fullData['appInfo']);
+			var appInfo = fullData['appInfo'];
+			for (var key in appInfo) {
+				var obj = appInfo[key];
+				var apps = [];
+				if(obj && obj["confidenceTotal"] > 50)
+				{
+					apps.push(key);
+				}
+			}
+			cb(err, apps);
+
+		});
+	}
+};
+
 function getAppsJson(cb) {
 	// set the apps.json to testing stage
 	var appsFileStr = path.resolve(__dirname, '../../apps.json');
-
 
 	// read in the file
 	fs.readFile(appsFileStr, 'utf8', function (err, data) {

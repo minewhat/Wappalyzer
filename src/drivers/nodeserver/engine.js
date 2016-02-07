@@ -11,13 +11,14 @@ var ph;
 var RESOURCE_TIMEOUT = 10000;
 
 var port = process.argv[2];
+
 var util = require('util');
 var log_stdout = process.stdout;
 var log_stderr = process.stderr;
 var debug = true;
 
-var access = fs.createWriteStream('node.access-'+ port +'.log', { flags: 'a' }),
-		error = fs.createWriteStream('node.error-'+ port +'.log', { flags: 'a' });
+var access = fs.createWriteStream('./log/node.access-'+ port +'.log', { flags: 'a' }),
+		error = fs.createWriteStream('./log/node.error-'+ port +'.log', { flags: 'a' });
 console.log = function(d) {
 	if(debug){
 		access.write(util.format(d) + '\n');
@@ -31,6 +32,10 @@ console.error = function(d) {
 	}
 };
 
+process.on('uncaughtException', function (err) {
+	console.log('uncaughtException', err);
+	errorHandling()
+});
 
 if(!port)
   console.error("Port not given");
@@ -134,11 +139,11 @@ function openURL(page, url, req, res, cb){
 						//results is now equals to: {html:'', env:'', headers:''}
 						var data = results;
 						//console.log(data);
-						wappalyzer.detectFromUrl(options, data, function(err, apps, appInfo) {
-							//console.log(err, apps, appInfo);
-							cb(err, {apps:apps, appInfo:appInfo});
+						wappalyzer.detectAppsFromUrl(options, data, function(err, apps) {
+							cb(err, apps);
 						});
 						page.close();
+
 					});
 				}catch(e){
 					console.log('exception caugth', e);
@@ -200,28 +205,22 @@ function restartPhantom(){
 }
 
 function pageInit(page){
-  page.set('settings.loadImages', false);
-  page.set('settings.resourceTimeout', RESOURCE_TIMEOUT);
-  page.set('settings.userAgent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
+	page.set('settings.loadImages', false);
+	page.set('settings.resourceTimeout', RESOURCE_TIMEOUT);
+	page.set('settings.userAgent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
 
-  page.set('onConsoleMessage', function(message) {
-    //console.log(message);
-  });
+	page.set('onConsoleMessage', function(message) {
+		//console.log(message);
+	});
 
-  page.set('onError', function(message) {
-    //console.log(message);
-  });
+	page.set('onError', function(message) {
+		//console.log(message);
+	});
 
-  page.set('onResourceTimeout', function(message) {
-    console.log('Resource timeout');
-  });
-
-	process.on('uncaughtException', function (err) {
-		console.log('uncaughtException', err);
-		errorHandling()
-	})
+	page.set('onResourceTimeout', function(message) {
+		console.log('Resource timeout');
+	});
 }
-
 
 
 

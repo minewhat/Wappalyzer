@@ -15,3 +15,5 @@ Desktop.ini
 $RECYCLE.BIN/
 
 !.gitkeep
+
+src/drivers/nodeserver/log/
