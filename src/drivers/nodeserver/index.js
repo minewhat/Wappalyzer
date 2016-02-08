@@ -39,16 +39,14 @@ exports.detectAppsFromUrl = function (options, data, cb) {
 
 	} else {
 		//run actual detection
-		runWappalyzer(options, data, function(err, detectedApps, fullData){
-			if(err || !detectedApps || fullData){
+		runWappalyzer(options, data, function(err, detectedApps, appInfo){
+			if(err || !detectedApps || !appInfo){
 				cb(true, null);
 			}
 
-			console.log(fullData['appInfo']);
-			var appInfo = fullData['appInfo'];
+			var apps = [];
 			for (var key in appInfo) {
 				var obj = appInfo[key];
-				var apps = [];
 				if(obj && obj["confidenceTotal"] > 50)
 				{
 					apps.push(key);
