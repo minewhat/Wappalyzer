@@ -1,5 +1,68 @@
 {
 	"apps": {
+    "Strato": {
+      "cats": [
+        6
+      ],
+      "html": "<a href=\"http://www.strato.de/\" target=\"_blank\">",
+      "website": "shop.strato.com",
+      "icon": "strato.png"
+    },
+    "Modified": {
+      "cats": [
+        6
+      ],
+      "meta": {
+        "generator": "\\(c\\) by modified eCommerce Shopsoftware ------ http://www.modified-shop.org"
+      },
+      "icon": "modified.png",
+      "website": "www.modified-shop.org/"
+    },
+    "Mietshop": {
+      "cats": [
+        6
+      ],
+      "meta": {
+        "generator": "Mietshop"
+      },
+      "html": "<a href=\"https://ssl.mietshop.d",
+      "website": "www.mietshop.de/",
+      "icon": "mietshop.png"
+    },
+    "EPages": {
+      "headers": {
+        "X-Powered-By": "epages 6"
+      },
+      "cats": [
+        6
+      ],
+      "html": "<div class=\"BoxContainer\">",
+      "website": "www.epages.com/",
+      "icon": "epages.png"
+    },
+    "AfterBuy": {
+        "cats": [
+          6
+        ],
+        "html": [
+          "<dd>This OnlineStore is brought to you by ViA-Online GmbH Afterbuy. Information and contribution at https://www.afterbuy.de</dd>"
+        ],
+        "icon": "after-buy.png",
+        "script": "shop-static\\.afterbuy\\.de",
+        "website": "www.afterbuy.de"
+      },
+    "Xonic": {
+        "cats": [
+          6
+        ],
+        "html": ["Powered by <a href=\"http://www.xonic-solutions.de/index.php\" target=\"_blank\">xonic-solutions Shopsoftware</a>"],
+        "meta": {
+          "keywords": "xonic-solutions"
+        },
+        "script": "core/jslib/jquery\\.xonic\\.js\\.php",
+        "website": "www.xonic-solutions.de",
+        "icon": "xonic.png"
+      },
 		"1C-Bitrix": {
 			"cats": [
 				1
@@ -69,13 +132,12 @@
                              "cats": [
                                 23
                         ],
-                        "headers": {
-                                 "X-Powered-By": "anchorCache"
-                        },
-                        "html": "<!--[^>]+anchorCache",
+                        "meta": {
+	                        "generator": "anchorCache"
+	                },
                         "icon": "anchorCache.png",
                         "implies": "PHP",
-                        "website": "anchorcache.eu"
+                        "website": "www.anchorcache.eu"
                 },
 		"AMPcms": {
 			"cats": [
@@ -889,7 +951,10 @@
 			],
 			"html": "<a href=\"[^>]+woltlab\\.com[^<]+<strong>Burning Board",
 			"icon": "Burning Board.png",
-			"implies": "PHP",
+			"implies": [
+				"PHP",
+				"Woltlab Community Framework"
+			],
 			"website": "www.woltlab.com"
 		},
 		"Business Catalyst": {
@@ -6441,6 +6506,18 @@
 			"icon": "Stackla Social Hub.png",
 			"website": "stackla.com/"
 		},
+		"Stamplay": {
+			"cats": [
+				34,
+				47
+			],
+			"headers": {
+				"Server": "Stamplay"
+			},
+			"icon": "Stamplay.png",
+			"script": "stamplay.*\\.js",
+			"website": "stamplay.com"
+		},
 		"Starlet": {
 			"cats": [
 				22
@@ -8609,6 +8686,16 @@
 			"script": "(?:scriptaculous|protoaculous)\\.js",
 			"website": "script.aculo.us"
 		},
+		"Segment": {
+			"cats": [
+				10
+			],
+			"env": "^analytics$",
+			"icon": "Segment.png",
+			"script": "cdn\\.segment\\.com/analytics\\.js",
+			"html": "<script[\\s\\S]*cdn\\.segment\\.com/analytics.js[\\s\\S]*script>",
+			"website": "segment.com"
+		},
 		"shine.js": {
 			"cats": [
 				25
@@ -8751,6 +8838,16 @@
 			"icon": "webpack.png",
 			"website": "webpack.github.io"
 		},
+		"Woltlab Community Framework": {
+		        "cats": [
+		          18
+		        ],
+		        "html": "var WCF_PATH[^>]+",
+		        "script": "WCF\\..*\\.js",
+		        "implies": "PHP",
+		        "website": "www.woltlab.com",
+		        "icon": "Woltlab Community Framework.png"
+	       },
 		"xCharts": {
 			"cats": [
 				25
@@ -8795,6 +8892,15 @@
 				"yepnope.*\\.js"
 			],
 			"website": "yepnopejs.com"
+		},
+		"List.js": {
+			"cats": [
+				12
+			],
+			"env": "^List$",
+			"icon": "List.js.png",
+			"script": "^list\\.(?:min\\.)?js$",
+			"website": "www.listjs.com"
 		}
 	},
 	"categories": {
