@@ -1,0 +1,17 @@
+{
+  "name": "wappalyzer-nodeserver",
+  "version": "0.0.1",
+  "description": "dependencies",
+  "main": "engine.js",
+  "dependencies": {
+    "express": "4.13.4",
+    "phantom": "0.8.4",
+    "async": "1.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "janakg",
+  "license": "MIT"
+}
