@@ -158,6 +158,7 @@ function closeAll(res){
 
 function pageInit(page){
 	page.set('settings.loadImages', false);
+	page.set('settings.webSecurityEnabled', false);
 	page.set('settings.ssl-protocol', 'any');
 	page.set('settings.resourceTimeout', RESOURCE_TIMEOUT);
 	page.set('settings.userAgent', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)');
