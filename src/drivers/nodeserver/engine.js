@@ -45,7 +45,8 @@ q.drain = function() {
 	console.log('\nQueue empty.\n');
 };
 
-phantom.create(function (phinstance) {
+options = { 'web-security': 'no' };
+phantom.create({parameters: options}, function (phinstance) {
   ph = phinstance;
   if(!ph)
     console.error("Phantom creation error");
