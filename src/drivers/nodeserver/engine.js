@@ -154,6 +154,7 @@ function openURL(page, url, req, res, cb){
 function closeAll(res){
   ph.exit();
   server.close();
+	process.exit(0);
 	//res.send('Good bye from Phantom engine!\n');
 }
 
